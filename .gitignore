@@ -44,6 +44,8 @@ buildNumber.properties
 # Maven wrapper command files
 mvn
 mvn.cmd
+mvnw
+mvnw.cmd
 
 # Maven local cache (if inside project)
 .m2/
