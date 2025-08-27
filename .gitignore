@@ -65,3 +65,8 @@ Thumbs.db
 ### Others ###
 *.swp
 *~
+
+
+# H2 database files
+*.mv.db
+*.trace.db
