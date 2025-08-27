@@ -1,6 +1,5 @@
 package com.jane.springboot.employees.controller;
 
-import com.jane.springboot.employees.DAO.EmployeeDAO;
 import com.jane.springboot.employees.entity.Employee;
 import com.jane.springboot.employees.request.EmployeeRequest;
 import com.jane.springboot.employees.service.EmployeeService;
