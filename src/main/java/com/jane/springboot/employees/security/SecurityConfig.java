@@ -9,37 +9,28 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
+import javax.sql.DataSource;
+
 @Configuration
 public class SecurityConfig {
+
     @Bean
-    public InMemoryUserDetailsManager userDetailsManager(){
-        UserDetails john = User.builder()
-                .username("john")
-                .password("{noop}root")
-                .roles("EMPLOYEE")
-                .build();
-
-        UserDetails mary = User.builder()
-                .username("mary")
-                .password("{noop}root")
-                .roles("EMPLOYEE", "MANAGER")
-                .build();
-
-        UserDetails susan = User.builder()
-                .username("susan")
-                .password("{noop}root")
-                .roles("EMPLOYEE", "MANAGER","ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(john, mary, susan);
+    public UserDetailsManager userDetailsManager(DataSource datasource){
+        return new JdbcUserDetailsManager(datasource);
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
             configurer
-                    .requestMatchers("/docs/**", "/swagger-ui/**","/v3/api-docs/**","swagger-ui.html/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/h2-console/**").permitAll()
+                    .requestMatchers("/docs/**", "/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html").permitAll()
                     .requestMatchers(HttpMethod.GET,"/api/employes").hasRole("EMPLOYEE")
                     .requestMatchers(HttpMethod.GET, "/api/employees/**").hasRole("EMPLOYEE")
                     .requestMatchers(HttpMethod.POST, "api/employees").hasRole("MANAGER")
@@ -56,6 +47,8 @@ public class SecurityConfig {
 
         http.exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(authenticationEntryPoint()));
+
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
         return http.build();
     }
